@@ -3,7 +3,7 @@ PROJECT(HelloAten-App)
 
 SET(CMAKE_CXX_STANDARD 11)
 SET(CMAKE_CXX_STANDARD_REQUIRED TRUE)
-SET(CMAKE_PREFIX_PATH /home/santhosh/testProjects/cpp_pytorch/libtorch)
+SET(CMAKE_PREFIX_PATH /opt/libtorch)
 
 FIND_PACKAGE(Torch REQUIRED)
 ADD_EXECUTABLE(HelloAten HelloAten.cpp)
