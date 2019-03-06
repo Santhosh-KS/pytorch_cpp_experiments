@@ -1,0 +1,76 @@
+dist: trusty
+sudo: true 
+language: cpp
+
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - g++-5
+      - build-essential
+      - checkinstall 
+      - cmake 
+      - pkg-config 
+      - yasm
+      - git 
+      - gfortran
+      - libboost-all-dev
+      - libqt5opengl5
+      - libqt5opengl5-dev
+      - libtiff4-dev
+      - libjpeg8-dev
+      - libjasper-dev
+      - libpng12-dev
+      - libavcodec-dev
+      - libavformat-dev
+      - libswscale-dev
+      - libdc1394-22-dev
+      - libxine2-dev
+      - libv4l-dev
+      - libgstreamer0.10-dev 
+      - libgstreamer-plugins-base0.10-dev
+      - qt5-default
+      - qttools5-dev
+      - qttools5-dev-tools
+      - libgtk2.0-dev
+      - libtbb-dev
+      - libatlas-base-dev
+      - libfaac-dev
+      - libmp3lame-dev 
+      - libtheora-dev
+      - libvorbis-dev 
+      - libxvidcore-dev
+      - libopencore-amrnb-dev 
+      - libopencore-amrwb-dev
+      - x264 
+      - v4l-utils
+      - python3.5 
+      - python3.5-dev 
+      - python-dev 
+      - python-numpy
+      - libtbb2 
+      - libjpeg-dev 
+      - libpng-dev 
+      - libtiff-dev 
+
+before_install:
+    - sudo apt-get update
+
+install:
+  - sudo apt-get install python-pip  
+  - sudo pip install numpy scipy
+  - sudo apt-get install zip unzip
+
+script:
+  - mkdir -p /opt
+  - cd /opt
+  - wget https://download.pytorch.org/libtorch/nightly/cpu/libtorch-shared-with-deps-latest.zip
+  - unzip libtorch-shared-with-deps-latest.zip
+  - git clone https://github.com/Santhosh-KS/pytorch_cpp_experiments.git pytorch_cpp_experiments
+  - cd pytorch_cpp_experiments
+  - cd HelloWorld 
+  - mkdir -p build
+  - cd build
+  - cmake ..
+  - make -j2
