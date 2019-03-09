@@ -8,3 +8,5 @@ FIND_PACKAGE(Torch REQUIRED)
 
 INCLUDE(HelloWorld/HelloWorld.cmake)
 INCLUDE(FrontEndExample/FrontEnd.cmake)
+INCLUDE(SimpleNeuralNet/simpleNn.cmake)
+INCLUDE(StackedNeuralNet/stackedNn.cmake)
