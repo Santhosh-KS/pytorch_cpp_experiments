@@ -75,3 +75,4 @@ script:
   - make -j2
   - ./HelloAten
   - ./SimpleNeuralNet
+  - ./StackedNeuralNet
