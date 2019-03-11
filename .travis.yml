@@ -69,6 +69,10 @@ script:
   - unzip libtorch-shared-with-deps-latest.zip
   - git clone https://github.com/Santhosh-KS/pytorch_cpp_experiments.git pytorch_cpp_experiments
   - cd pytorch_cpp_experiments
+  - cd scripts
+  - sudo mkdir -p /opt/MNIST/
+  - sudo python download_mnist.py -d /opt/MNIST/
+  - cd ..
   - mkdir -p build
   - cd build
   - cmake ..
@@ -76,3 +80,5 @@ script:
   - ./HelloAten
   - ./SimpleNeuralNet
   - ./StackedNeuralNet
+  - ./BasicMnist
+
