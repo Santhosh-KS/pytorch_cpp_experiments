@@ -29,7 +29,7 @@ int main() {
 
   // Create a multi-threaded data loader for the MNIST dataset.
   auto data_loader = torch::data::make_data_loader(
-      torch::data::datasets::MNIST("./data").map(
+      torch::data::datasets::MNIST("/opt/MNIST/").map(
           torch::data::transforms::Stack<>()),
       /*batch_size=*/64);
 
