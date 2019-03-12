@@ -11,3 +11,5 @@ INCLUDE(FrontEndExample/FrontEnd.cmake)
 INCLUDE(SimpleNeuralNet/simpleNn.cmake)
 INCLUDE(StackedNeuralNet/stackedNn.cmake)
 INCLUDE(BasicMnist/basicMnist.cmake)
+INCLUDE(NnMnist/nnMnist.cmake)
+

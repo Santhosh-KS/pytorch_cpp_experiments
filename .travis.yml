@@ -78,7 +78,6 @@ script:
   - cmake ..
   - make -j2
   - ./HelloAten
-  - ./FrontEnd
   - ./SimpleNeuralNet
   - ./StackedNeuralNet
   - ./BasicMnist

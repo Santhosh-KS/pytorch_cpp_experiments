@@ -1,0 +1,4 @@
+PROJECT(NnMnist)
+
+ADD_EXECUTABLE(NnMnist NnMnist/NnMnist.cpp)
+TARGET_LINK_LIBRARIES(NnMnist "${TORCH_LIBRARIES}")
