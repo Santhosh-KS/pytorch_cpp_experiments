@@ -81,4 +81,7 @@ script:
   - ./SimpleNeuralNet
   - ./StackedNeuralNet
   - ./BasicMnist
+  - ./SequenceNnMnist
+  - ./TorchNnModule
+  - ./NnMnist
 
