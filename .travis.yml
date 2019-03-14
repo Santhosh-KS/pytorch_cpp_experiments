@@ -62,12 +62,15 @@ install:
   - sudo pip install numpy scipy
   - sudo apt-get install zip unzip
   - sudo apt-get install -qq cppcheck
+  - sudo apt-get install binutils
+  - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-6 90
+
 
 script:
-  - sudo unlink /usr/bin/gcc && sudo ln -s /usr/bin/gcc-6 /usr/bin/gcc
-  - sudo unlink /usr/bin/g++ && sudo ln -s /usr/bin/g++-6 /usr/bin/g++
-  - gcc --version
-  - g++ --version
+  #  - sudo unlink /usr/bin/gcc && sudo ln -s /usr/bin/gcc-6 /usr/bin/gcc
+  #- sudo unlink /usr/bin/g++ && sudo ln -s /usr/bin/g++-6 /usr/bin/g++
+  #- gcc --version
+  #- g++ --version
   - mkdir -p /opt
   - cd /opt
   - wget https://download.pytorch.org/libtorch/nightly/cpu/libtorch-shared-with-deps-latest.zip
@@ -80,8 +83,8 @@ script:
   - cd ..
   - mkdir -p build
   - cd build
-  - cmake VERBOSE=1 ..
-  - make -j2
+  - cmake ..
+  - make VERBOSE=1 -j2
   - ./HelloAten
   - ./SimpleNeuralNet
   - ./StackedNeuralNet
@@ -89,6 +92,10 @@ script:
   - ./SequenceNnMnist
   - ./TorchNnModule
   - ./NnMnist
+  # Profile the NnMnist.
+  - gprof ./NnMnist > gprof.log
+  - head gprof.log -n 100
+  # Sanity check on the code using cppcheck.
   - cd ..
   - cppcheck --quiet --error-exitcode=1 --force . 
 
