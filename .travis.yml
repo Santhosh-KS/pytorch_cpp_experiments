@@ -61,6 +61,7 @@ install:
   - sudo apt-get install python-pip  
   - sudo pip install numpy scipy
   - sudo apt-get install zip unzip
+  - sudo apt-get install -qq cppcheck
 
 script:
   - mkdir -p /opt
@@ -75,7 +76,7 @@ script:
   - cd ..
   - mkdir -p build
   - cd build
-  - cmake ..
+  - cmake VERBOSE=1 ..
   - make -j2
   - ./HelloAten
   - ./SimpleNeuralNet
@@ -84,4 +85,6 @@ script:
   - ./SequenceNnMnist
   - ./TorchNnModule
   - ./NnMnist
+  - cd ..
+  - cppcheck --quiet --error-exitcode=1 . 
 
