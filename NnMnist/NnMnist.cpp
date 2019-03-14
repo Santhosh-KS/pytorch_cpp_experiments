@@ -1,7 +1,6 @@
 #include <torch/torch.h>
 #include <iostream>
 
-
 struct ReLu: torch::nn::Module {
   ReLu() {}
   torch::Tensor forward(torch::Tensor x) {
@@ -40,29 +39,31 @@ int main()
     size_t batch_index = 0;
     // Iterate the data loader to yield batches from the dataset.
     for (auto& batch : *trainDataLoader) {
+
       // Reset gradients.
       optimizer.zero_grad();
+
       // Execute the model on the input data.
       auto imgs = batch.data.view({batch.data.size(0), -1});
+
       //torch::Tensor prediction = sequential->forward(batch.data);
       torch::Tensor prediction = sequential->forward(imgs);
+
       // Compute a loss value to judge the prediction of our model.
       torch::Tensor loss = torch::nll_loss(prediction, batch.target);
+
       // Compute gradients of the loss w.r.t. the parameters of our model.
       loss.backward();
+
       // Update the parameters based on the calculated gradients.
       optimizer.step();
+
       // Output the loss and checkpoint every 100 batches.
       if (++batch_index % 100 == 0) {
         std::cout << "Epoch: " << epoch << " | Batch: " << batch_index
           << " | Training Loss: " << loss.item<float>() << std::endl;
-        // Serialize your model periodically as a checkpoint.
-        torch::save(sequential, "sequential.pt");
       }
     }
   }
-//  torch::nn::Sequential loadSeq;
-//  torch::load(loadSeq, "sequential.pt");
-//  std::cout << "Loaded model = " << c10::str(loadSeq) << "\n";
   return 0;
 }
