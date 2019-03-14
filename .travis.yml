@@ -7,7 +7,7 @@ addons:
     sources:
       - ubuntu-toolchain-r-test
     packages:
-      - g++-7.3
+      - g++-6
       - build-essential
       - checkinstall 
       - cmake 
