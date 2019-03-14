@@ -64,6 +64,10 @@ install:
   - sudo apt-get install -qq cppcheck
 
 script:
+  - sudo unlink /usr/bin/gcc && sudo ln -s /usr/bin/gcc-6 /usr/bin/gcc
+  - sudo unlink /usr/bin/g++ && sudo ln -s /usr/bin/g++-6 /usr/bin/g++
+  - gcc --version
+  - g++ --version
   - mkdir -p /opt
   - cd /opt
   - wget https://download.pytorch.org/libtorch/nightly/cpu/libtorch-shared-with-deps-latest.zip
@@ -86,5 +90,5 @@ script:
   - ./TorchNnModule
   - ./NnMnist
   - cd ..
-  - cppcheck --quiet --error-exitcode=1 . 
+  - cppcheck --quiet --error-exitcode=1 --force . 
 
