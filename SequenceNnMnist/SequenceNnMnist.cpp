@@ -1,5 +1,6 @@
 #include <torch/torch.h>
 #include <iostream>
+//#include <memory>
 
 
 class NetWork : public torch::nn::Module
@@ -53,7 +54,7 @@ int main()
   auto parameters = model->named_parameters();
   auto keys = parameters.keys();
   auto vals = parameters.values();
-#if 0
+#if 1
   for(auto v: keys) {
     std::cout << v << "\n";
   }
@@ -67,6 +68,7 @@ int main()
     std::cout << v << "\n";
   }
 #endif
+
   torch::nn::Sequential seqDecType1(torch::nn::Linear(784, 128),
       torch::nn::Functional(torch::relu),
       torch::nn::Linear(128, 64),
@@ -82,6 +84,7 @@ int main()
       ReLu(),
       torch::nn::Linear(64, 10),
       LogSoftMax());
+
   std::cout << c10::str(seqDecType2) << "\n";
 
   torch::optim::SGD optimizer(seqDecType1->parameters(), /*lr=*/0.01);
