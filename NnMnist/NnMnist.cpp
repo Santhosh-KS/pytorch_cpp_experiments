@@ -24,9 +24,11 @@ int main()
       /*batch_size=*/64);
 
   torch::nn::Sequential sequential(torch::nn::Linear(784, 128),
-      torch::nn::Functional(torch::relu),
+      //torch::nn::Functional(torch::relu),
+      ReLu(),
       torch::nn::Linear(128, 64),
-      torch::nn::Functional(torch::relu),
+      //torch::nn::Functional(torch::relu),
+      ReLu(),
       torch::nn::Linear(64, 10),
       LogSoftMax());
 
