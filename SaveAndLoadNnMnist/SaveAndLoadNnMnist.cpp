@@ -38,8 +38,10 @@ int main()
 
   torch::optim::SGD optimizer(sequential->parameters(), /*lr=*/0.01);
 
+  //std::cout << c10::str(sequential->parameters()) << "\n\n";
   std::cout << "Training:\n\n";
-  for (size_t epoch = 1; epoch <= 6; ++epoch) {
+  //for (size_t epoch = 1; epoch <= 6; ++epoch) {
+  for (size_t epoch = 1; epoch <= 1; ++epoch) {
     size_t batchIndex = 0;
     // Iterate the data loader to yield batches from the dataset.
     for (auto& batch : *trainDataLoader) {
@@ -65,49 +67,12 @@ int main()
       if (++batchIndex % 100 == 0) {
         std::cout << "Epoch: " << epoch << " | Batch: " << batchIndex
           << " | Training Loss: " << loss.item<float>() << "\n\n";
+        torch::save(sequential, "test.pt");
       }
     }
   }
-
-  // Test the built model.
-
-  std::cout << "Testing:\n\n";
-  torch::data::datasets::MNIST::Mode  mode = torch::data::datasets::MNIST::Mode::kTest;
-  auto testDataLoader = torch::data::make_data_loader(
-      torch::data::datasets::MNIST("/opt/MNIST/", mode).map(
-        torch::data::transforms::Stack<>()),
-      batchSize);
-
-  auto batch = std::begin(*testDataLoader);
-
-  auto images = batch->data;
-  auto target = batch->target;
-  //  std::cout << "images = " << images.sizes() << "\n";
-  //  std::cout << "targets = " << target.sizes() << "\n";
-
-  auto index = torch::randint(batchSize,{1,batchSize}, at::kInt);
-
-  std::cout << "+---------------+---------------+-------------+\n";
-  std::cout << "|  Actual value |   Prediction  |   Accuracy  |\n";
-  std::cout << "|---------------|---------------|-------------|\n";
-
-  for(uint32_t i = 0; i < batchSize; i++) {
-
-    //let us predict the image results from our model.
-    auto image = images[i];
-    //std::cout << "image = " << image.sizes() << "\n";
-
-    auto img = image.view({1,784});
-    //std::cout << "img = " << img.sizes() << "\n";
-    // std::cout << img << "\n";
-    auto logProb = sequential->forward(img);
-    //auto result = std::get<1>(sequential(img).max(/*dim=*/1));
-
-    auto prediction = torch::exp(logProb);
-    //std::cout << "prediction = " << prediction << "\n";
-    auto maxVal = prediction.max(1);
-    std::cout << "|\t" << std::get<1>(maxVal).item<int>() <<  "\t| \t  " << target[i].item<int>() << "\t|  "<< std::get<0>(maxVal).item<float>() << "   |\n";
-    std::cout << "+---------------+---------------+-------------+\n";
-  }
+  torch::nn::Sequential test;
+  torch::load(test, "test.pt");
+  std::cout << "size = " << test->size() << "\n";
   return 0;
 }

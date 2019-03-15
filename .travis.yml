@@ -94,6 +94,7 @@ script:
   - ./SequenceNnMnist
   - ./TorchNnModule
   - ./NnMnist
+  - ./SaveAndLoadNnMnist
   # Profile the NnMnist.
   - gprof ./NnMnist > gprof.log
   - head gprof.log -n 20
