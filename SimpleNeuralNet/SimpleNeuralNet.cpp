@@ -12,7 +12,7 @@ torch::Tensor ActivationFunction(const torch::Tensor &x)
 int main()
 {
   // Seed for Random number
-  torch::manual_seed(9);
+//  torch::manual_seed(9);
   //at::manual_seed(9);
 
   torch::Tensor features = torch::rand({1, 5});
@@ -49,6 +49,10 @@ int main()
   std::cout << "features shape = " << features.sizes() << "\n";
   std::cout << "features shape rows = " << features.sizes()[0] << "\n";
   std::cout << "features shape col = " << features.size(1) << "\n";
+  std::cout << "features shape dtype = " << features.dtype() << "\n";
+  std::cout << "features shape numel = " << features.numel() << "\n";
 
+  auto rInt = torch::randint(64, {1,10});
+  std::cout << "rInt = " << rInt << "\n";
   return 0;
 }
