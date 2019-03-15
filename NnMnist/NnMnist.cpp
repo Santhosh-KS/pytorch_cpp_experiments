@@ -18,10 +18,11 @@ struct LogSoftMax : torch::nn::Module {
 int main()
 {
   // Train model.
+  uint32_t batchSize = 64;
   auto trainDataLoader = torch::data::make_data_loader(
       torch::data::datasets::MNIST("/opt/MNIST/").map(
         torch::data::transforms::Stack<>()),
-      /*batch_size=*/64);
+      batchSize);
 
   torch::nn::Sequential sequential(torch::nn::Linear(784, 128),
       //torch::nn::Functional(torch::relu),
@@ -32,14 +33,14 @@ int main()
       torch::nn::Linear(64, 10),
       LogSoftMax());
 
-  std::cout << "Model:\n";
+  std::cout << "Model:\n\n";
   std::cout << c10::str(sequential) << "\n\n";
 
   torch::optim::SGD optimizer(sequential->parameters(), /*lr=*/0.01);
 
   std::cout << "Training:\n\n";
   for (size_t epoch = 1; epoch <= 6; ++epoch) {
-    size_t batch_index = 0;
+    size_t batchIndex = 0;
     // Iterate the data loader to yield batches from the dataset.
     for (auto& batch : *trainDataLoader) {
 
@@ -61,8 +62,8 @@ int main()
       optimizer.step();
 
       // Output the loss and checkpoint every 100 batches.
-      if (++batch_index % 100 == 0) {
-        std::cout << "Epoch: " << epoch << " | Batch: " << batch_index
+      if (++batchIndex % 100 == 0) {
+        std::cout << "Epoch: " << epoch << " | Batch: " << batchIndex
           << " | Training Loss: " << loss.item<float>() << "\n\n";
       }
     }
@@ -71,7 +72,6 @@ int main()
   // Test the built model.
 
   std::cout << "Testing:\n\n";
-  uint32_t batchSize = 64;
   torch::data::datasets::MNIST::Mode  mode = torch::data::datasets::MNIST::Mode::kTest;
   auto testDataLoader = torch::data::make_data_loader(
       torch::data::datasets::MNIST("/opt/MNIST/", mode).map(
