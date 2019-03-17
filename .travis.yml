@@ -80,7 +80,9 @@ script:
   - cd pytorch_cpp_experiments
   - cd scripts
   - sudo mkdir -p /opt/MNIST/
+  - sudo mkdir -p /opt/FASHION_MNIST/
   - sudo python download_mnist.py -d /opt/MNIST/
+  - sudo python download_fashion_mnist.py -d /opt/FASHION_MNIST/
   - cd ..
   - mkdir -p build
   - cd build
@@ -95,6 +97,7 @@ script:
   - ./TorchNnModule
   - ./NnMnist
   - ./SaveAndLoadNnMnist
+  - ./FashionMnist
   # Profile the NnMnist.
   - gprof ./NnMnist > gprof.log
   - head gprof.log -n 20
