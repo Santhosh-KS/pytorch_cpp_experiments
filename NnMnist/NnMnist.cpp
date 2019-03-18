@@ -69,6 +69,7 @@ int main()
     }
   }
 
+  sequential->eval();
   // Test the built model.
 
   std::cout << "Testing:\n\n";
