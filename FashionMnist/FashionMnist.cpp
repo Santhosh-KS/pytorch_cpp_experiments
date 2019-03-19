@@ -115,6 +115,7 @@ int main()
 
   // Test the built model.
 
+  sequential->eval();
   std::cout << "Testing:\n\n";
   torch::data::datasets::FASHION_MNIST::Mode  mode = torch::data::datasets::FASHION_MNIST::Mode::kTest;
   auto testDataLoader = torch::data::make_data_loader(
