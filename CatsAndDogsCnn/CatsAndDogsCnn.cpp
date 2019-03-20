@@ -23,5 +23,25 @@ int main()
   module = torch::jit::load("script_module.pt");
   std::cout << c10::str(module) << "\n";
 
-//  std::cout << c10::str(sequential) << "\n";
+  // Create a vector of inputs.
+  std::vector<torch::jit::IValue> inputs;
+  inputs.push_back(torch::ones({1, 3, 224, 224}));
+
+  // Execute the model and turn its output into a tensor.
+  at::Tensor output = module->forward(inputs).toTensor();
+  std::cout << output.slice(/*dim=*/1, /*start=*/0, /*end=*/5) << '\n';
+
+  torch::nn::Module mdl(module->forward(inputs));
+  torch::nn::Sequential sequential(mdl);
+  std::cout << c10::str(sequential) << "\n";
+#if 0
+  auto parameters = module.get_parameters();
+  auto keys = parameters.keys();
+  auto vals = parameters.values();
+  for(auto v: keys) {
+    std::cout << v << "\n";
+  }
+#endif
+  return 0;
+  //  std::cout << c10::str(sequential) << "\n";
 }
