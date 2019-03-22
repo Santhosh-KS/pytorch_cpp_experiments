@@ -1,6 +1,9 @@
 #include <torch/torch.h>
 #include <torch/data/datasets/base.h>
 #include <torch/script.h>
+
+#include "caffe2/serialize/inline_container.h"
+
 #include <iostream>
 #include <memory>
 
@@ -19,9 +22,35 @@ int main()
 
   //torch::load(sequential, "resnet18-5c106cde.pth");
 
-  std::shared_ptr<torch::jit::script::Module> module;
-  module = torch::jit::load("script_module.pt");
+  std::shared_ptr<torch::jit::script::Module> module =  torch::jit::load("script_module.pt");
   std::cout << c10::str(module) << "\n";
+
+  for (const auto& parameter : module->get_parameters()) {
+    std::cout << parameter->slot() << "\n";
+  }
+
+#if 0
+  //caffe2::serialize::PyTorchStreamReader pytorchSerializer("script_module.pt");
+
+//  std::cout << pytorchSerializer.archiveName().c_str() << "\n";
+
+ // auto sequential = std::make_shared<torch::nn::Sequential>();
+  torch::nn::Sequential sequential;
+
+  torch::load(sequential, "script_module.pt");
+
+  std::cout << c10::str(sequential) << "\n";
+  std::cout << sequential->size() << "\n";
+
+
+  auto ret = module->get_modules();
+  auto vals = ret.values();
+
+  for (auto &v: vals) {
+    //if (*(module->get_method(v.name).get())) {
+      std::cout << module->get_method(v.name).pretty_print_schema().c_str() << "\n";
+    //}
+  }
 
   // Create a vector of inputs.
   std::vector<torch::jit::IValue> inputs;
@@ -31,10 +60,24 @@ int main()
   at::Tensor output = module->forward(inputs).toTensor();
   std::cout << output.slice(/*dim=*/1, /*start=*/0, /*end=*/5) << '\n';
 
+  auto ret = module->get_modules();
+
+  auto keys = ret.keys();
+  auto vals = ret.values();
+
+  for (auto &v: keys) {
+    std::cout << v.c_str() << "\n";
+  }
+  for (auto &v: vals) {
+    //std::cout << module->get_method(v.name) << "\n";
+    std::cout << v.name.c_str() << "\n";
+  }
+
+
   torch::nn::Module mdl(module->forward(inputs));
   torch::nn::Sequential sequential(mdl);
   std::cout << c10::str(sequential) << "\n";
-#if 0
+
   auto parameters = module.get_parameters();
   auto keys = parameters.keys();
   auto vals = parameters.values();
