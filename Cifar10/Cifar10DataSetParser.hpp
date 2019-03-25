@@ -22,6 +22,8 @@ namespace torch {
 
           void ReadBinFile(const std::string &path, bool mode);
           void SplitDump(const std::string &file);
+          //std::vector<int> ReadFile(const std::string& fileName);
+          std::vector<char> ReadFile(const std::string& fileName);
         public:
 
           // The mode in which the dataset is loaded.

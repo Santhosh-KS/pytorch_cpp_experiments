@@ -9,6 +9,7 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <iterator>
 
 #include "Cifar10DataSetParser.hpp"
 
@@ -41,34 +42,45 @@ namespace torch {
         }
       }
 
-      void CIFAR10::SplitDump(const std::string &file)
+      void CIFAR10::SplitDump(const std::string &filePath)
       {
-        std::ifstream fileBuf(file, std::ios::binary);
-        AT_CHECK(fileBuf, "Error opening images file at ", file);
-        //fileBuf.seekg(0, fileBuf.end);
-        //std::cout << "Len = " << fileBuf.tellg() << "\n";
-#if 1
-        int count(0);
-        while (fileBuf) {
-          count++;
-          //std::ios::pos_type before = fileBuf.tellg();
-          //uint8_t x;
-          uint8_t x;
-          fileBuf >> x;
-          //std::ios::pos_type after = fileBuf.tellg();
-          /*std::cout << before << ' ' << static_cast<int>(x) << ' '
-            << after << std::endl;*/
-          std::cout << static_cast<int>(x) << " ";
-          if (count % 1024 == 0) {
-            std::cout << "\n\n\n";
-          }
-          if (count > 3073) {
-            std::cout << "\n\n\n";
-            break;
+        std::ifstream file;
+        file.open(filePath, std::ios::in | std::ios::binary | std::ios::ate);
+
+        AT_CHECK(file, "Error opening images file at ", filePath);
+
+
+        auto fileSize = file.tellg();
+        auto buffer = std::make_unique<char[]>(fileSize);
+
+        //Read the entire file at once
+        file.seekg(0, std::ios::beg);
+        file.read(buffer.get(), fileSize);
+        file.close();
+
+        std::cout << "File Size = " << fileSize << "\n";
+        std::vector<std::vector<int>> images;
+        std::vector<int> labels;
+        std::size_t size(10000);
+        images.reserve(size);
+        labels.resize(size);
+
+        for(std::size_t i = 0; i < size; ++i) {
+          labels[i] = static_cast<int>(buffer[i * 3073]);
+
+          std::vector<int> image;
+          image.resize(3*32*32);
+          images.push_back(image);
+
+          for(std::size_t j = 1; j < 3073; ++j) {
+            images[i][j - 1] = static_cast<int>(buffer[i * 3073 + j]);
           }
         }
-        std::cout << "Count = " << count << "\n";
-#endif
+        std::cout << "Images size = " << images.size() << "\n";
+        std::cout << "Lables size = " << labels.size() << "\n";
+        for(int i =0 ; i < 10 ; i++) {
+          std::cout << labels[i] << "\n";
+        }
         return;
       }
 
@@ -77,7 +89,7 @@ namespace torch {
 
       CIFAR10::CIFAR10(const std::string &root, Mode mode)
       {
-        ReadBinFile(root, mode == Mode::kTrain);
+        ReadBinFile(root, Mode::kTrain == mode);
       }
 
       CIFAR10::~CIFAR10()
@@ -95,8 +107,6 @@ namespace torch {
       {
         return Images_.size(0);
       }
-
-
     } // ns datasets
   } // ns data
 } // ns torch
