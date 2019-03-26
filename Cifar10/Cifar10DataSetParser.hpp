@@ -24,6 +24,7 @@ namespace torch {
           void SplitDump(const std::string &file);
           //std::vector<int> ReadFile(const std::string& fileName);
           std::vector<char> ReadFile(const std::string& fileName);
+          void FastSeek(const std::string &filePath);
         public:
 
           // The mode in which the dataset is loaded.
