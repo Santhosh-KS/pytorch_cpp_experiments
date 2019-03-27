@@ -17,14 +17,11 @@ namespace torch {
       class CIFAR10 : public DS::Dataset<CIFAR10>
       {
         private:
-          torch::Tensor Images_;
-          torch::Tensor Targets_;
+          std::vector<torch::Tensor> Images;
+          torch::Tensor Targets;
 
           void ReadBinFile(const std::string &path, bool mode);
-          void SplitDump(const std::string &file);
-          //std::vector<int> ReadFile(const std::string& fileName);
-          std::vector<char> ReadFile(const std::string& fileName);
-          void FastSeek(const std::string &filePath);
+          std::tuple<torch::Tensor, std::vector<torch::Tensor>> FastSeek(const std::string &fileName);
         public:
 
           // The mode in which the dataset is loaded.
@@ -46,7 +43,7 @@ namespace torch {
           optional<size_t> size() const override;
 
 #if 0
-          /// Returns true if this is the training subset of FASHION_MNIST.
+          /// Returns true if this is the training subset of CIFAR10.
           bool is_train() const noexcept;
 
           /// Returns all images stacked into a single tensor.
