@@ -24,20 +24,17 @@ struct LogSoftMax : torch::nn::Module {
 int main()
 {
   TDD::CIFAR10::Mode  mode = TDD::CIFAR10::Mode::kTrain;
-
-#if 0
-  auto train = TDD::CIFAR10("/opt/pytorch/data/cifar-10-batches-bin/", mode);
-  mode = TDD::CIFAR10::Mode::kTest;
-  auto test = TDD::CIFAR10("/opt/pytorch/data/cifar-10-batches-bin/", mode);
-  auto v = test.size();
-  //  std::cout << "Test data size = " << std::to_string(v) << "\n";
-#endif
-
   uint32_t batchSize = 64;
   auto trainDataLoader = torch::data::make_data_loader(
       torch::data::datasets::CIFAR10("/opt/pytorch/data/cifar-10-batches-bin/", mode).map(
         torch::data::transforms::Stack<>()),
       batchSize);
+  auto batch = std::begin(*trainDataLoader);
+
+  auto images = batch->data;
+  auto target = batch->target;
+  std::cout << "images = " << images.sizes() << "\n";
+  std::cout << "targets = " << target.sizes() << "\n";
 
   torch::nn::Sequential sequential(torch::nn::Linear(3072, 1024),
       //torch::nn::Functional(torch::relu),
@@ -56,12 +53,6 @@ int main()
 
   std::cout << "Model:\n\n";
   std::cout << c10::str(sequential) << "\n\n";
-  auto batch = std::begin(*trainDataLoader);
-
-  auto images = batch->data;
-  auto target = batch->target;
-  std::cout << "images = " << images.sizes() << "\n";
-  std::cout << "targets = " << target.sizes() << "\n";
 
 #if 0
   torch::optim::SGD optimizer(sequential->parameters(), /*lr=*/0.01);
