@@ -2,6 +2,10 @@
 
 #include <torch/torch.h>
 
+#include <opencv2/core.hpp>
+#include <opencv2/imgproc.hpp>
+#include <opencv2/highgui.hpp>
+
 #include "Cifar10DataSetParser.hpp"
 
 namespace TDD = torch::data::datasets;
@@ -20,6 +24,28 @@ struct LogSoftMax : torch::nn::Module {
   }
 };
 
+void Display(torch::Tensor imageTensor)
+{
+  std::vector<char> tmpVec;
+  auto flattenImg = imageTensor.view({1,3*32*32});
+
+  for(int i =0; i < flattenImg.numel(); i++) {
+    tmpVec.push_back(flattenImg[0][i].item().to<float>()*255);
+  }
+  std::cout << "Tmp vec = " << tmpVec.size() << "\n";
+#if 0
+  for(size_t i = 0; i < tmpVec.size(); i++) {
+    std::cout << tmpVec[i] << " ";
+  }
+  std::cout << "\n";
+#endif
+  cv::Mat imgMat;
+  imgMat.create(32, 32,  CV_8UC3);
+  memcpy(imgMat.data, tmpVec.data(), tmpVec.size()*sizeof(char));
+  cv::imshow("testing", imgMat);
+  cv::waitKey(0);
+  return;
+}
 
 int main()
 {
@@ -35,6 +61,15 @@ int main()
   auto target = batch->target;
   std::cout << "images = " << images.sizes() << "\n";
   std::cout << "targets = " << target.sizes() << "\n";
+
+  std::cout << "single images = " << images[0].sizes() << "\n";
+  std::cout << "single targets = " << target[0].sizes() << "\n";
+
+  for (int i = 0 ; i < 5; i++) {
+    Display(images[i]);
+  }
+
+#if 0
 
   torch::nn::Sequential sequential(torch::nn::Linear(3072, 1024),
       //torch::nn::Functional(torch::relu),
@@ -54,7 +89,6 @@ int main()
   std::cout << "Model:\n\n";
   std::cout << c10::str(sequential) << "\n\n";
 
-#if 0
   torch::optim::SGD optimizer(sequential->parameters(), /*lr=*/0.01);
 
   std::cout << "Training:\n\n";
