@@ -90,8 +90,9 @@ script:
   #- sudo ldconfig
   #- source ~/.bashrc
   #- cd /opt
-  - git clone https://github.com/Santhosh-KS/CustomOpencv4.git opencv4
-  - cd opencv4
+  #- git clone https://github.com/Santhosh-KS/CustomOpencv4.git opencv4
+  - git clone https://github.com/Santhosh-KS/CustomOpenCV-3.4.3.git opencv343
+  - cd opencv343
   - sudo cp -r ./bin/* /usr/bin
   - sudo cp -r ./include/* /usr/include/
   - sudo cp -r ./lib/*  /usr/lib  
@@ -101,7 +102,7 @@ script:
   - sudo ldconfig
   - source ~/.bashrc
   - cd /opt
-  - rm -rf /opt/opencv4
+  - rm -rf /opt/opencv343
 
   # Install pytorch stuff.
   - wget https://download.pytorch.org/libtorch/nightly/cpu/libtorch-shared-with-deps-latest.zip
