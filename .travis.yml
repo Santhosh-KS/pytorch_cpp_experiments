@@ -92,11 +92,11 @@ script:
   #- cd /opt
   - git clone https://github.com/Santhosh-KS/CustomOpencv4.git opencv4
   - cd opencv4
-  - cp -r ./bin/* /usr/bin
-  - cp -r ./include/* /usr/include/
-  - cp -r ./lib  /user/lib  
-    #- cd python
-    #- python setup.py
+  - sudo cp -r ./bin/* /usr/bin
+  - sudo cp -r ./include/* /usr/include/
+  - sudo cp -r ./lib  /user/lib  
+  - cd python
+  - sudo python setup.py
   - sudo sh -c 'echo "/usr/local/lib" >> /etc/ld.so.conf.d/opencv.conf'
   - sudo ldconfig
   - source ~/.bashrc
