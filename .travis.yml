@@ -91,19 +91,17 @@ script:
   #- source ~/.bashrc
   #- cd /opt
   - git clone https://github.com/Santhosh-KS/CustomOpencv4.git opencv4
+  - sudo mkdir -p /usr/lib /usr/bin /usr/include
   - cd opencv4
   - sudo cp -r ./bin/* /usr/bin
   - sudo cp -r ./include/* /usr/include/
   - sudo cp -r ./lib  /user/lib  
   - cd python
-  - sudo python setup.py
+  - sudo python setup.py install
   - sudo sh -c 'echo "/usr/local/lib" >> /etc/ld.so.conf.d/opencv.conf'
   - sudo ldconfig
   - source ~/.bashrc
   - cd /opt
-  # Just a debug stuff.
-  - rm -rf opencv4
-  - cat /etc/ld.so.conf.d/opencv.conf
 
   # Install pytorch stuff.
   - wget https://download.pytorch.org/libtorch/nightly/cpu/libtorch-shared-with-deps-latest.zip
