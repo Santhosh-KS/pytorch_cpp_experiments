@@ -93,6 +93,9 @@ script:
   #- git clone https://github.com/Santhosh-KS/CustomOpencv4.git opencv4
   - git clone https://github.com/Santhosh-KS/CustomOpenCV-3.4.3.git opencv343
   - cd opencv343
+  - sudo cp -r ./bin/ /
+  - sudo cp -r ./include/ /
+  - sudo cp -r ./lib/  /
   - sudo cp -r ./bin/ /usr
   - sudo cp -r ./include/ /usr
   - sudo cp -r ./lib/  /usr
