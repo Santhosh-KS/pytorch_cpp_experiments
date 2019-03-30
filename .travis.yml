@@ -101,6 +101,7 @@ script:
   - sudo ldconfig
   - source ~/.bashrc
   - cd /opt
+  - rm -rf /opt/opencv4
 
   # Install pytorch stuff.
   - wget https://download.pytorch.org/libtorch/nightly/cpu/libtorch-shared-with-deps-latest.zip
