@@ -95,8 +95,8 @@ script:
   - sudo cp -r ./bin/* /usr/bin
   - sudo cp -r ./include/* /usr/include/
   - sudo cp -r ./lib  /usr/lib  
-  - cd python
-  - sudo python setup.py install
+    #- cd python
+    #- sudo python setup.py install
   - sudo sh -c 'echo "/usr/local/lib" >> /etc/ld.so.conf.d/opencv.conf'
   - sudo ldconfig
   - source ~/.bashrc
