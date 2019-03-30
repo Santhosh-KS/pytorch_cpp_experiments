@@ -72,7 +72,7 @@ script:
   #- sudo unlink /usr/bin/g++ && sudo ln -s /usr/bin/g++-6 /usr/bin/g++
   #- gcc --version
   #- g++ --version
-  - mkdir -p /opt
+  - mkdir -p /opt /usr /lib /bin /share
   - cd /opt
   # Install opencv stuff.
   #- git clone https://github.com/opencv/opencv.git
@@ -89,18 +89,18 @@ script:
   #- sudo sh -c 'echo "/usr/local/lib" >> /etc/ld.so.conf.d/opencv.conf'
   #- sudo ldconfig
   #- source ~/.bashrc
-  #- cd /opt
   #- git clone https://github.com/Santhosh-KS/CustomOpencv4.git opencv4
   - git clone https://github.com/Santhosh-KS/CustomOpenCV-3.4.3.git opencv343
-    #- cd opencv343
-    #- sudo cp -r ./bin/ /
-    #- sudo cp -r ./include/ /
-    #- sudo cp -r ./lib/  /
-    #- sudo cp -r ./bin/ /usr
-    #- sudo cp -r ./include/ /usr
-    #- sudo cp -r ./lib/  /usr
-    #- cd python
-    #- sudo python setup.py install
+  - cd opencv343
+  - sudo cp -r ./bin/ /
+  - sudo cp -r ./include/ /
+  - sudo cp -r ./lib/  /
+  - sudo cp -r ./bin/ /usr
+  - sudo cp -r ./include/ /usr
+  - sudo cp -r ./lib/  /usr
+  - sudo cp -r ./share/  /share
+  - cd python
+  - sudo python setup.py install
   - sudo sh -c 'echo "/usr/local/lib" >> /etc/ld.so.conf.d/opencv.conf'
   - sudo ldconfig
   - source ~/.bashrc

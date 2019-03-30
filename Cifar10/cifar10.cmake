@@ -1,5 +1,6 @@
 PROJECT(Cifar10Classifier)
 
+SET(OpenCV_DIR /usr/lib/)
 FIND_PACKAGE(OpenCV REQUIRED)
 
 SET(SRC Cifar10/Cifar10DataSetParser.cpp
