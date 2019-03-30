@@ -1,5 +1,6 @@
 PROJECT(Cifar10Classifier)
 
+SET(OpenCV_DIR /usr/lib/cmake/opencv4)
 FIND_PACKAGE(OpenCV REQUIRED)
 
 INCLUDE_DIRECTORIES(${OpenCV_INCLUDE_DIRS})
