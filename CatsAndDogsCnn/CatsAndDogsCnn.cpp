@@ -25,11 +25,11 @@ int main()
   std::shared_ptr<torch::jit::script::Module> module =  torch::jit::load("script_module.pt");
   std::cout << c10::str(module) << "\n";
 
+#if 0
   for (const auto& parameter : module->get_parameters()) {
     std::cout << parameter->slot() << "\n";
   }
 
-#if 0
   //caffe2::serialize::PyTorchStreamReader pytorchSerializer("script_module.pt");
 
 //  std::cout << pytorchSerializer.archiveName().c_str() << "\n";
