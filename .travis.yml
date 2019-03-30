@@ -95,12 +95,15 @@ script:
   - cp -r ./bin/* /usr/bin
   - cp -r ./include/* /usr/include/
   - cp -r ./lib  /user/lib  
-  - cd python
-  - python setup.py
+    #- cd python
+    #- python setup.py
   - sudo sh -c 'echo "/usr/local/lib" >> /etc/ld.so.conf.d/opencv.conf'
   - sudo ldconfig
   - source ~/.bashrc
   - cd /opt
+  # Just a debug stuff.
+  - rm -rf opencv4
+  - cat /etc/ld.so.conf.d/opencv.conf
 
   # Install pytorch stuff.
   - wget https://download.pytorch.org/libtorch/nightly/cpu/libtorch-shared-with-deps-latest.zip
