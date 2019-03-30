@@ -1,8 +1,6 @@
 PROJECT(Cifar10Classifier)
 
-#SET(OpenCV_DIR /usr/lib/cmake/opencv4)
-SET(OpenCV_DIR /usr/lib/cmake/openCV-3.4.3)
-#SET(OpenCV_DIR /home/santhosh/course/reloaded/opencv/new_custom_install/lib/cmake/opencv4)
+SET(OpenCV_DIR /usr/lib/)
 FIND_PACKAGE(OpenCV REQUIRED)
 
 
