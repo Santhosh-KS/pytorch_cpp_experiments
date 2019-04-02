@@ -21,11 +21,8 @@ namespace torch {
           torch::Tensor Targets;
 
           void ReadBinFile(const std::string &path, bool mode);
-          //std::tuple<torch::Tensor, std::vector<torch::Tensor>> FastSeek(const std::string &fileName);
-          //std::tuple<std::vector<int>, std::vector<char>> GetData(const std::string &fileName);
-          //std::tuple<std::vector<int>, std::vector<uint8_t>> GetData(const std::string &fileName);
-          std::tuple<torch::Tensor, torch::Tensor> GetData(const std::string &fileName);
-          void ConvertToTensor(std::vector<char> &vec, const int size);
+          std::tuple<std::vector<int>, std::vector<uint8_t>> GetData(const std::string &fileName);
+          void SaveTensors(const std::vector<int> &lables, const std::vector<uint8_t> &imgs);
         public:
 
           // The mode in which the dataset is loaded.

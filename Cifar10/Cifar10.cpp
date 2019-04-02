@@ -31,12 +31,13 @@ bool Display(torch::Tensor imageTensor)
   std::vector<uint8_t> tmpVec;
   auto flattenImg = imageTensor.view({3*32*32});
 
-#if 0
+#if 1
   for(int i = 0; i < flattenImg.numel(); i++) {
-    std::cout << flattenImg[i] << " " ;
+    std::cout << flattenImg[i].item<float>() << " " ;
   }
-  std::cout << "Done pinting vector \n\n";
+  std::cout << "Done printing vector \n\n";
 #endif
+
   for(int i =0; i < flattenImg.numel(); i++) {
     tmpVec.push_back(flattenImg[i].item().to<float>()*255);
     retVal = true;
@@ -44,12 +45,14 @@ bool Display(torch::Tensor imageTensor)
 
   auto minMax = std::minmax_element (tmpVec.begin(), tmpVec.end());
   std::cout << "Tmp vec = " << tmpVec.size() << " Min = " << static_cast<int>(*minMax.first) << " Max = " << static_cast<int>(*minMax.second) << "\n";
-#if 0
+
+#if 1
   for(size_t i = 0; i < tmpVec.size(); i++) {
     std::cout << tmpVec[i] << " ";
   }
   std::cout << "\n";
 #endif
+
   cv::Mat imgMat;
   imgMat.create(32, 32,  CV_8UC3);
   memcpy(imgMat.data, tmpVec.data(), tmpVec.size()*sizeof(uint8_t));
@@ -60,9 +63,10 @@ bool Display(torch::Tensor imageTensor)
 
 int main()
 {
+#if 0
   TDD::CIFAR10::Mode  mode = TDD::CIFAR10::Mode::kTrain;
   torch::data::datasets::CIFAR10("/opt/pytorch/data/cifar-10-batches-bin/", mode);
-#if 0
+#endif
   TDD::CIFAR10::Mode  mode = TDD::CIFAR10::Mode::kTrain;
   uint32_t batchSize = 64;
   auto trainDataLoader = torch::data::make_data_loader(
@@ -82,7 +86,7 @@ int main()
     std::cout << "Image # " << i << " ";
     Display(images[i]);
   }
-
+#if 0
 
   torch::nn::Sequential sequential(torch::nn::Linear(3072, 1024),
       //torch::nn::Functional(torch::relu),
@@ -135,6 +139,5 @@ int main()
     }
   }
 #endif
-
   return 0;
 }
