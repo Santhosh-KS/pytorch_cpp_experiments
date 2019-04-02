@@ -25,48 +25,71 @@ struct LogSoftMax : torch::nn::Module {
   }
 };
 
+
+std::string GetTarget(int id)
+{
+  std::string retVal("Unknown");
+  switch(id) {
+    case 0:
+      retVal = "airplane";
+      break;
+    case 1:
+      retVal = "automobile";
+      break;
+    case 2:
+      retVal = "bird";
+      break;
+    case 3:
+      retVal = "cat";
+      break;
+    case 4:
+      retVal = "deer";
+      break;
+    case 5:
+      retVal = "dog";
+      break;
+    case 6:
+      retVal = "frog";
+      break;
+    case 7:
+      retVal = "horse";
+      break;
+    case 8:
+      retVal = "ship";
+      break;
+    case 9:
+      retVal = "truck";
+      break;
+    default:
+      break;
+  }
+  return retVal;
+}
+
 bool Display(torch::Tensor imageTensor)
 {
   bool retVal(false);
   std::vector<uint8_t> tmpVec;
   auto flattenImg = imageTensor.view({3*32*32});
 
-#if 1
-  for(int i = 0; i < flattenImg.numel(); i++) {
-    std::cout << flattenImg[i].item<float>() << " " ;
-  }
-  std::cout << "Done printing vector \n\n";
-#endif
-
   for(int i =0; i < flattenImg.numel(); i++) {
-    tmpVec.push_back(flattenImg[i].item().to<float>()*255);
+    tmpVec.push_back(static_cast<uint8_t>(flattenImg[i].item().to<float>()*255));
     retVal = true;
   }
 
-  auto minMax = std::minmax_element (tmpVec.begin(), tmpVec.end());
-  std::cout << "Tmp vec = " << tmpVec.size() << " Min = " << static_cast<int>(*minMax.first) << " Max = " << static_cast<int>(*minMax.second) << "\n";
-
-#if 1
-  for(size_t i = 0; i < tmpVec.size(); i++) {
-    std::cout << tmpVec[i] << " ";
-  }
-  std::cout << "\n";
-#endif
-
-  cv::Mat imgMat;
-  imgMat.create(32, 32,  CV_8UC3);
-  memcpy(imgMat.data, tmpVec.data(), tmpVec.size()*sizeof(uint8_t));
-  cv::imshow("testing", imgMat);
+  // Merge the color channels appropriately.
+  cv::Mat outputMat(3, 32*32, CV_8UC1, tmpVec.data());
+  cv::Mat tmp = outputMat.t();
+  outputMat = tmp.reshape(3, 32);
+  cv::cvtColor(outputMat, outputMat, cv::COLOR_RGB2BGR);
+  cv::imshow("testing", outputMat);
   cv::waitKey(0);
+
   return retVal;
 }
 
 int main()
 {
-#if 0
-  TDD::CIFAR10::Mode  mode = TDD::CIFAR10::Mode::kTrain;
-  torch::data::datasets::CIFAR10("/opt/pytorch/data/cifar-10-batches-bin/", mode);
-#endif
   TDD::CIFAR10::Mode  mode = TDD::CIFAR10::Mode::kTrain;
   uint32_t batchSize = 64;
   auto trainDataLoader = torch::data::make_data_loader(
@@ -82,12 +105,13 @@ int main()
 
   std::cout << "single images = " << images[0].sizes() << "\n";
 
+  // Test if the images are decoded fine.
   for (int i = 0 ; i < images.size(0); i++) {
-    std::cout << "Image # " << i << " ";
+    std::cout << "Image # " << i << " is : " << GetTarget(target[i].item<int>()).c_str() <<" \n";
     Display(images[i]);
   }
-#if 0
 
+#if 0
   torch::nn::Sequential sequential(torch::nn::Linear(3072, 1024),
       //torch::nn::Functional(torch::relu),
       ReLu(),

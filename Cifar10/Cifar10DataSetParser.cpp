@@ -26,7 +26,7 @@ namespace torch {
       constexpr uint32_t CHANNELS(3);
       constexpr uint32_t ROWS(32);
       constexpr uint32_t COLUMNS(32);
-      constexpr uint32_t NUM_ELEMENTS(CHANNELS*ROWS*COLUMNS);
+      constexpr uint32_t NUM_ELEMENTS(CHANNELS * ROWS * COLUMNS); // 3072
 
       // Private Methods.
 
