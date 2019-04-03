@@ -43,16 +43,16 @@ namespace torch {
           /// Returns the size of the dataset.
           optional<size_t> size() const override;
 
-#if 0
+          std::string GetTarget(int id);
+
           /// Returns true if this is the training subset of CIFAR10.
-          bool is_train() const noexcept;
+          bool IsTrain() const noexcept;
 
           /// Returns all images stacked into a single tensor.
-          const Tensor& images() const;
+          const Tensor& GetImages() const;
 
           /// Returns all targets stacked into a single tensor.
-          const Tensor& targets() const;
-#endif
+          const Tensor& GetTargets() const;
       };
     }// ns datasets
   }// ns data

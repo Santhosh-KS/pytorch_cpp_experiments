@@ -27,6 +27,7 @@ namespace torch {
       constexpr uint32_t ROWS(32);
       constexpr uint32_t COLUMNS(32);
       constexpr uint32_t NUM_ELEMENTS(CHANNELS * ROWS * COLUMNS); // 3072
+      constexpr uint8_t NUM_TRAIN_FILES(5);
 
       // Private Methods.
 
@@ -61,8 +62,8 @@ namespace torch {
            * <lable - 1 byte><RGB channel - 3072 bytes>
            * ....
            * */
-          uint8_t numFiles = 5;
-          for (int i = 1; i < numFiles; i++) {
+
+          for (int i = 1; i <= NUM_TRAIN_FILES; i++) {
             file = path + prefix + std::to_string(i) + suffix;
             std::vector<int> tmpLabel;
             std::vector<uint8_t> tmpImg;
@@ -141,6 +142,62 @@ namespace torch {
       {
         return Images.size(0);
       }
+
+      std::string CIFAR10::GetTarget(int id)
+      {
+        std::string retVal("Unknown");
+        switch(id) {
+          case 0:
+            retVal = "airplane";
+            break;
+          case 1:
+            retVal = "automobile";
+            break;
+          case 2:
+            retVal = "bird";
+            break;
+          case 3:
+            retVal = "cat";
+            break;
+          case 4:
+            retVal = "deer";
+            break;
+          case 5:
+            retVal = "dog";
+            break;
+          case 6:
+            retVal = "frog";
+            break;
+          case 7:
+            retVal = "horse";
+            break;
+          case 8:
+            retVal = "ship";
+            break;
+          case 9:
+            retVal = "truck";
+            break;
+          default:
+            break;
+        }
+        return retVal;
+      }
+
+      bool CIFAR10::IsTrain() const noexcept
+      {
+        return Images.size(0) == NUM_TRAIN_FILES * DATA_SIZE;
+      }
+
+      const Tensor& CIFAR10::GetImages() const
+      {
+        return Images;
+      }
+
+      const Tensor& CIFAR10::GetTargets() const
+      {
+        return Targets;
+      }
+
     } // ns datasets
   } // ns data
 } // ns torch

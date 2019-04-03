@@ -26,45 +26,6 @@ struct LogSoftMax : torch::nn::Module {
 };
 
 
-std::string GetTarget(int id)
-{
-  std::string retVal("Unknown");
-  switch(id) {
-    case 0:
-      retVal = "airplane";
-      break;
-    case 1:
-      retVal = "automobile";
-      break;
-    case 2:
-      retVal = "bird";
-      break;
-    case 3:
-      retVal = "cat";
-      break;
-    case 4:
-      retVal = "deer";
-      break;
-    case 5:
-      retVal = "dog";
-      break;
-    case 6:
-      retVal = "frog";
-      break;
-    case 7:
-      retVal = "horse";
-      break;
-    case 8:
-      retVal = "ship";
-      break;
-    case 9:
-      retVal = "truck";
-      break;
-    default:
-      break;
-  }
-  return retVal;
-}
 
 bool Display(torch::Tensor imageTensor)
 {
@@ -77,11 +38,25 @@ bool Display(torch::Tensor imageTensor)
     retVal = true;
   }
 
+#if 0
   // Merge the color channels appropriately.
   cv::Mat outputMat(3, 32*32, CV_8UC1, tmpVec.data());
   cv::Mat tmp = outputMat.t();
   outputMat = tmp.reshape(3, 32);
   cv::cvtColor(outputMat, outputMat, cv::COLOR_RGB2BGR);
+  cv::imshow("testing", outputMat);
+  cv::waitKey(0);
+#endif
+
+  // Merge the color channels appropriately.
+  cv::Mat outputMat;
+
+  cv::Mat channelR(32, 32, CV_8UC1, tmpVec.data());
+  cv::Mat channelG(32, 32, CV_8UC1, tmpVec.data() + 32 * 32);
+  cv::Mat channelB(32, 32, CV_8UC1, tmpVec.data() + 2 * 32 * 32);
+  std::vector<cv::Mat> channels{ channelB, channelG, channelR };
+
+  cv::merge(channels, outputMat);
   cv::imshow("testing", outputMat);
   cv::waitKey(0);
 
@@ -92,10 +67,14 @@ int main()
 {
   TDD::CIFAR10::Mode  mode = TDD::CIFAR10::Mode::kTrain;
   uint32_t batchSize = 64;
+
+  auto dataSet = torch::data::datasets::CIFAR10("/opt/pytorch/data/cifar-10-batches-bin/", mode);
+
   auto trainDataLoader = torch::data::make_data_loader(
-      torch::data::datasets::CIFAR10("/opt/pytorch/data/cifar-10-batches-bin/", mode).map(
-        torch::data::transforms::Stack<>()),
+      dataSet.map(torch::data::transforms::Stack<>()),
       batchSize);
+  // Test the image loader
+#if 1
   auto batch = std::begin(*trainDataLoader);
 
   auto images = batch->data;
@@ -107,11 +86,11 @@ int main()
 
   // Test if the images are decoded fine.
   for (int i = 0 ; i < images.size(0); i++) {
-    std::cout << "Image # " << i << " is : " << GetTarget(target[i].item<int>()).c_str() <<" \n";
+    std::cout << "Image # " << i << " is : " << dataSet.GetTarget(target[i].item<int>()).c_str() <<" \n";
     Display(images[i]);
   }
+#endif
 
-#if 0
   torch::nn::Sequential sequential(torch::nn::Linear(3072, 1024),
       //torch::nn::Functional(torch::relu),
       ReLu(),
@@ -130,6 +109,7 @@ int main()
   std::cout << "Model:\n\n";
   std::cout << c10::str(sequential) << "\n\n";
 
+#if 0
   torch::optim::SGD optimizer(sequential->parameters(), /*lr=*/0.01);
 
   std::cout << "Training:\n\n";
