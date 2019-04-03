@@ -118,9 +118,9 @@ script:
   - sudo mkdir -p /opt/pytorch/data/cifar-10-batches-bin/
   - sudo python download_mnist.py -d /opt/MNIST/
   - sudo python download_fashion_mnist.py -d /opt/FASHION_MNIST/
-  - sudo python download_cifar10.py -d /opt/pytorch/data/cifar-10-batches-bin/
-  - cd /opt/pytorch/data/cifar-10-batches-bin/
-  - tar -xvzf *.gz
+  - sudo python download_cifar10.py -d /opt/pytorch/data/
+  - cd /opt/pytorch/data/
+  - sudo tar -xvzf *.gz
   - cd /opt/pytorch_cpp_experiments
   - mkdir -p build
   - cd build
