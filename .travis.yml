@@ -72,7 +72,6 @@ script:
   #- sudo unlink /usr/bin/g++ && sudo ln -s /usr/bin/g++-6 /usr/bin/g++
   #- gcc --version
   #- g++ --version
-  - mkdir -p /opt /usr /lib /bin /share
   - cd /opt
   # Install opencv stuff.
   #- git clone https://github.com/opencv/opencv.git
