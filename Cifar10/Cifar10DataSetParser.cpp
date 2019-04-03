@@ -1,5 +1,3 @@
-#include <torch/data/datasets/mnist.h>
-
 #include <torch/data/example.h>
 #include <torch/types.h>
 #include <torch/torch.h>

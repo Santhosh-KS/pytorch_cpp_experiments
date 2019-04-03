@@ -25,9 +25,8 @@ struct LogSoftMax : torch::nn::Module {
   }
 };
 
-
-
-bool Display(torch::Tensor imageTensor)
+#if IMG_DISPLAY_ENABLED
+bool Display(torch::Tensor imageTensor, std::string &title)
 {
   bool retVal(false);
   std::vector<uint8_t> tmpVec;
@@ -57,11 +56,11 @@ bool Display(torch::Tensor imageTensor)
   std::vector<cv::Mat> channels{ channelB, channelG, channelR };
 
   cv::merge(channels, outputMat);
-  cv::imshow("testing", outputMat);
+  cv::imshow(title.c_str(), outputMat);
   cv::waitKey(0);
-
   return retVal;
 }
+#endif
 
 int main()
 {
@@ -73,8 +72,9 @@ int main()
   auto trainDataLoader = torch::data::make_data_loader(
       dataSet.map(torch::data::transforms::Stack<>()),
       batchSize);
-  // Test the image loader
-#if 1
+
+#if IMG_DISPLAY_ENABLED
+  // Test if the images loaded properly
   auto batch = std::begin(*trainDataLoader);
 
   auto images = batch->data;
@@ -86,9 +86,11 @@ int main()
 
   // Test if the images are decoded fine.
   for (int i = 0 ; i < images.size(0); i++) {
-    std::cout << "Image # " << i << " is : " << dataSet.GetTarget(target[i].item<int>()).c_str() <<" \n";
-    Display(images[i]);
+    std::string title = dataSet.GetTarget(target[i].item<int>());
+    std::cout << "Displaying " << (dataSet.IsTrain() ? " Tain " : " Test ") <<"Image # " << i << " is : " << title.c_str() <<" \n";
+    Display(images[i], title);
   }
+  cv::destroyAllWindows();
 #endif
 
   torch::nn::Sequential sequential(torch::nn::Linear(3072, 1024),
