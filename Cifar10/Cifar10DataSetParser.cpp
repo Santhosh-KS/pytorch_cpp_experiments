@@ -143,42 +143,13 @@ namespace torch {
 
       std::string CIFAR10::GetTarget(int id)
       {
-        std::string retVal("Unknown");
-        switch(id) {
-          case 0:
-            retVal = "airplane";
-            break;
-          case 1:
-            retVal = "automobile";
-            break;
-          case 2:
-            retVal = "bird";
-            break;
-          case 3:
-            retVal = "cat";
-            break;
-          case 4:
-            retVal = "deer";
-            break;
-          case 5:
-            retVal = "dog";
-            break;
-          case 6:
-            retVal = "frog";
-            break;
-          case 7:
-            retVal = "horse";
-            break;
-          case 8:
-            retVal = "ship";
-            break;
-          case 9:
-            retVal = "truck";
-            break;
-          default:
-            break;
+        std::vector<std::string> targetString = {"airplane", "automobile", "bird", "cat", "deer",
+                     "dog", "frog", "horse", "ship", "truck"};
+
+        if (id > static_cast<int>(targetString.size()) || id < 0) {
+          return std::string("Unknown");
         }
-        return retVal;
+        return targetString[id];
       }
 
       bool CIFAR10::IsTrain() const noexcept

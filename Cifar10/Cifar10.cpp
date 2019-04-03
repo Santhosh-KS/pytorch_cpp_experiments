@@ -3,11 +3,9 @@
 
 #include <torch/torch.h>
 
-#if IMG_DISPLAY_ENABLED
 #include <opencv2/core.hpp>
 #include <opencv2/imgproc.hpp>
 #include <opencv2/highgui.hpp>
-#endif
 
 #include "Cifar10DataSetParser.hpp"
 
@@ -27,15 +25,15 @@ struct LogSoftMax : torch::nn::Module {
   }
 };
 
-#if IMG_DISPLAY_ENABLED
-bool Display(torch::Tensor imageTensor, std::string &title)
+bool Display(const torch::Tensor &imageTensor, const std::string &title)
 {
   bool retVal(false);
   std::vector<uint8_t> tmpVec;
-  auto flattenImg = imageTensor.view({3*32*32});
+  torch::Tensor flattenImg = imageTensor.view({3*32*32});
 
   for(int i =0; i < flattenImg.numel(); i++) {
-    tmpVec.push_back(static_cast<uint8_t>(flattenImg[i].item().to<float>()*255));
+    uint8_t val = static_cast<uint8_t>(flattenImg[i].item().to<float>()*255);
+    tmpVec.push_back(val);
     retVal = true;
   }
 
@@ -62,7 +60,6 @@ bool Display(torch::Tensor imageTensor, std::string &title)
   cv::waitKey(0);
   return retVal;
 }
-#endif
 
 int main()
 {
@@ -75,7 +72,7 @@ int main()
       dataSet.map(torch::data::transforms::Stack<>()),
       batchSize);
 
-#if IMG_DISPLAY_ENABLED
+#if 0
   // Test if the images loaded properly
   auto batch = std::begin(*trainDataLoader);
 
