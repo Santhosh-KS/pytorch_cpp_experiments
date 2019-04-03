@@ -3,9 +3,11 @@
 
 #include <torch/torch.h>
 
+#if IMG_DISPLAY_ENABLED
 #include <opencv2/core.hpp>
 #include <opencv2/imgproc.hpp>
 #include <opencv2/highgui.hpp>
+#endif
 
 #include "Cifar10DataSetParser.hpp"
 
