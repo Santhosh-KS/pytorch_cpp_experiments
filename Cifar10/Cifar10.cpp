@@ -2,12 +2,15 @@
 #include <algorithm>
 
 #include <torch/torch.h>
+#include <torch/ordered_dict.h>
+#include <torch/nn/modules/conv.h>
 
 #include <opencv2/core.hpp>
 #include <opencv2/imgproc.hpp>
 #include <opencv2/highgui.hpp>
 
 #include "Cifar10DataSetParser.hpp"
+
 
 namespace TDD = torch::data::datasets;
 
@@ -16,6 +19,36 @@ struct ReLu: torch::nn::Module {
   torch::Tensor forward(torch::Tensor x) {
     return torch::relu(x);
   }
+};
+
+struct MaxPool2d: torch::nn::Module {
+  MaxPool2d() {}
+  torch::Tensor forward(torch::Tensor x) {
+    return torch::max_pool2d(x,{2, 2});
+  }
+  void pretty_print(std::ostream& stream) const {
+    stream << "torch::max_pool2d(x, {2, 2})";
+  }
+};
+
+struct Flatten: torch::nn::Module {
+  Flatten() {}
+  torch::Tensor forward(torch::Tensor x) {
+    return x.view({-1, 64*4*4});
+  }
+};
+
+struct DropOut: torch::nn::Module {
+  double Rate;
+  bool IsTrain;
+  DropOut(double rate, bool train):Rate(rate),IsTrain(train) {}
+  torch::Tensor forward(torch::Tensor x) {
+    return torch::dropout(x, Rate, IsTrain);
+  }
+  void pretty_print(std::ostream& stream) const {
+    stream << "torch::nn::Dropout(rate=" << Rate << ")";
+  }
+
 };
 
 struct LogSoftMax : torch::nn::Module {
@@ -92,57 +125,84 @@ int main()
   cv::destroyAllWindows();
 #endif
 
-  torch::nn::Sequential sequential(torch::nn::Linear(3072, 1024),
-      //torch::nn::Functional(torch::relu),
-      ReLu(),
-      torch::nn::Linear(1024, 512),
-      ReLu(),
-      torch::nn::Linear(512, 256),
-      ReLu(),
-      torch::nn::Linear(256, 128),
-      ReLu(),
-      torch::nn::Linear(128, 64),
-      //torch::nn::Functional(torch::relu),
-      ReLu(),
-      torch::nn::Linear(64, 10),
-      LogSoftMax());
+  // Check if GPU is available.
+  torch::Device device(torch::kCPU);
 
+  if (torch::cuda::is_available()) {
+    std::cout << "CUDA is available! Training on GPU." << std::endl;
+    device = torch::Device(torch::kCUDA);
+  }
+  else {
+    std::cout << "Training on CPU." << std::endl;
+  }
+
+  torch::nn::Sequential seqConvLayer(torch::nn::Conv2d(torch::nn::Conv2dOptions(3, 16, 3).padding(1)),
+      ReLu(),
+      MaxPool2d(),
+      torch::nn::Conv2d(torch::nn::Conv2dOptions(16, 32, 3).padding(1)),
+      ReLu(),
+      MaxPool2d(),
+      torch::nn::Conv2d(torch::nn::Conv2dOptions(32, 64, 3).padding(1)),
+      ReLu(),
+      MaxPool2d(),
+      Flatten(),
+      DropOut(0.25, true),
+      torch::nn::Linear(64 * 4 * 4, 500),
+      ReLu(),
+      DropOut(0.25, true),
+      torch::nn::Linear(500, 10),
+      LogSoftMax()
+      );
+  seqConvLayer->to(device);
   std::cout << "Model:\n\n";
-  std::cout << c10::str(sequential) << "\n\n";
+  std::cout << c10::str(seqConvLayer) << "\n\n";
 
-#if 0
-  torch::optim::SGD optimizer(sequential->parameters(), /*lr=*/0.01);
+  torch::optim::SGD optimizer(seqConvLayer->parameters(), /*lr=*/0.01);
 
-  std::cout << "Training:\n\n";
-  for (size_t epoch = 1; epoch <= 6; ++epoch) {
+  std::cout << "Training.....\n";
+
+  for (size_t epoch = 1; epoch <= 2; ++epoch) {
+
     size_t batchIndex = 0;
-    // Iterate the data loader to yield batches from the dataset.
+    // keep track of training and validation loss
+    float train_loss = 0.0;
+    //float  valid_loss = 0.0;
+
+     seqConvLayer->train();
+    //for data, target in train_loader:
     for (auto& batch : *trainDataLoader) {
+
+      batch.data.to(device);
+      batch.target.to(device);
 
       // Reset gradients.
       optimizer.zero_grad();
 
       // Execute the model on the input data.
-      auto imgs = batch.data.view({batch.data.size(0), -1});
+      auto imgs = batch.data.to(torch::kFloat);
+      //std::cout << "images = " << imgs.sizes() << "\n";
 
-      torch::Tensor prediction = sequential->forward(imgs);
 
-      // Compute a loss value to judge the prediction of our model.
-      torch::Tensor loss = torch::nll_loss(prediction, batch.target);
+      // forward pass: compute predicted outputs by passing inputs to the model
+      torch::Tensor prediction = seqConvLayer->forward(imgs);
 
+      // calculate the batch loss
+      auto loss = torch::nll_loss(prediction, batch.target.to(torch::kLong));
       // Compute gradients of the loss w.r.t. the parameters of our model.
       loss.backward();
 
       // Update the parameters based on the calculated gradients.
       optimizer.step();
 
+      // update training loss
+      train_loss += loss.item<float>() * batch.data.size(0);
+
       // Output the loss and checkpoint every 100 batches.
       if (++batchIndex % 100 == 0) {
         std::cout << "Epoch: " << epoch << " | Batch: " << batchIndex
-          << " | Training Loss: " << loss.item<float>() << "\n\n";
+          << " | Training Loss: " << loss.item<float>() << "\n";
       }
     }
   }
-#endif
   return 0;
 }
