@@ -1,5 +1,7 @@
 #include <iostream>
 #include <algorithm>
+#include <sstream>
+#include <fstream>
 
 #include <torch/torch.h>
 #include <torch/ordered_dict.h>
@@ -41,20 +43,27 @@ struct Flatten: torch::nn::Module {
 struct DropOut: torch::nn::Module {
   double Rate;
   bool IsTrain;
+
   DropOut(double rate, bool train):Rate(rate),IsTrain(train) {}
   torch::Tensor forward(torch::Tensor x) {
     return torch::dropout(x, Rate, IsTrain);
   }
+
   void pretty_print(std::ostream& stream) const {
     stream << "torch::nn::Dropout(rate=" << Rate << ")";
   }
-
 };
 
 struct LogSoftMax : torch::nn::Module {
+
   LogSoftMax() {}
+
   torch::Tensor forward(torch::Tensor x) {
     return torch::log_softmax(x, /*dim=*/1);
+  }
+
+  void pretty_print(std::ostream& stream) const {
+    stream << "torch::log_softmax(x, dim=1)";
   }
 };
 
@@ -94,6 +103,17 @@ bool Display(const torch::Tensor &imageTensor, const std::string &title)
   return retVal;
 }
 
+std::stringstream ReadFile(const std::string &file)
+{
+  std::stringstream buffer;
+  std::ifstream fileReader(file);
+  if(fileReader) {
+    buffer << fileReader.rdbuf();
+    fileReader.close();
+  }
+  return buffer;
+}
+
 int main()
 {
   TDD::CIFAR10::Mode  mode = TDD::CIFAR10::Mode::kTrain;
@@ -123,8 +143,8 @@ int main()
     Display(images[i], title);
   }
   cv::destroyAllWindows();
-#endif
 
+#endif
   // Check if GPU is available.
   torch::Device device(torch::kCPU);
 
@@ -161,6 +181,7 @@ int main()
 
   std::cout << "Training.....\n";
 
+  double minVal(10000.991);
   for (size_t epoch = 1; epoch <= 2; ++epoch) {
 
     size_t batchIndex = 0;
@@ -168,8 +189,7 @@ int main()
     float train_loss = 0.0;
     //float  valid_loss = 0.0;
 
-     seqConvLayer->train();
-    //for data, target in train_loader:
+    seqConvLayer->train();
     for (auto& batch : *trainDataLoader) {
 
       batch.data.to(device);
@@ -202,7 +222,36 @@ int main()
         std::cout << "Epoch: " << epoch << " | Batch: " << batchIndex
           << " | Training Loss: " << loss.item<float>() << "\n";
       }
+      if (minVal >  loss.item<float>()) {
+        minVal =  loss.item<float>();
+
+        std::string model_path = "test_model.pt";
+        torch::serialize::OutputArchive output_archive;
+        seqConvLayer->save(output_archive);
+        output_archive.save_to(model_path);
+        std::cout << "Saving model with least training error = " << minVal << "\n";
+      }
     }
   }
+  std::cout << "Least training error reached = " << minVal << "\n";
+
+  torch::serialize::InputArchive archive;
+  std::string file("test_model.pt");
+  archive.load_from(file, device);
+  //std::stringstream fileContents(ReadFile(file));
+  //torch::load(archive, fileContents);
+  torch::nn::Sequential savedSeq;
+
+  savedSeq->load(archive);
+  auto parameters = savedSeq->named_parameters();
+  auto keys = parameters.keys();
+  auto vals = parameters.values();
+
+  for(auto v: keys) {
+    std::cout << v << "\n";
+  }
+
+  std::cout << "Saved Model:\n\n";
+  std::cout << c10::str(savedSeq) << "\n\n";
   return 0;
 }

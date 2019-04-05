@@ -109,6 +109,7 @@ script:
   - sudo python download_cifar10.py -d /opt/pytorch/data/
   - cd /opt/pytorch/data/
   - sudo tar -xvzf *.gz
+  - sudo tar -xvf cifar-10-binary.tar
   - cd /opt/pytorch_cpp_experiments
   - mkdir -p build
   - cd build
