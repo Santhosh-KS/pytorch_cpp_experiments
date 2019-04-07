@@ -1,9 +1,9 @@
-PROJECT(Cifar10Classifier)
+PROJECT(Cifar10SaveAndLoad)
 
-SET(SRC Cifar10/Cifar10.cpp
+SET(SRC Cifar10SaveAndLoad/main.cpp
         Common/Cifar10DataSetParser.cpp)
 
-SET(BIN Cifar10)
+SET(BIN Cifar10SaveAndLoad)
 SET(INC Common)
 
 INCLUDE_DIRECTORIES(${INC})

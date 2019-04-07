@@ -7,10 +7,6 @@
 #include <torch/ordered_dict.h>
 #include <torch/nn/modules/conv.h>
 
-#include <opencv2/core.hpp>
-#include <opencv2/imgproc.hpp>
-#include <opencv2/highgui.hpp>
-
 #include "Cifar10DataSetParser.hpp"
 
 
@@ -67,6 +63,12 @@ struct LogSoftMax : torch::nn::Module {
   }
 };
 
+#if 0
+#include <opencv2/core.hpp>
+#include <opencv2/imgproc.hpp>
+#include <opencv2/highgui.hpp>
+
+
 bool Display(const torch::Tensor &imageTensor, const std::string &title)
 {
   bool retVal(false);
@@ -102,6 +104,7 @@ bool Display(const torch::Tensor &imageTensor, const std::string &title)
   cv::waitKey(0);
   return retVal;
 }
+#endif
 
 std::stringstream ReadFile(const std::string &file)
 {

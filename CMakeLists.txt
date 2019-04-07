@@ -12,6 +12,8 @@ SET(CMAKE_PREFIX_PATH /opt/libtorch)
 
 FIND_PACKAGE(Torch REQUIRED)
 
+
+
 INCLUDE(HelloWorld/HelloWorld.cmake)
 INCLUDE(FrontEndExample/FrontEnd.cmake)
 INCLUDE(SimpleNeuralNet/simpleNn.cmake)
@@ -22,5 +24,7 @@ INCLUDE(SequenceNnMnist/sequenceNnMnist.cmake)
 INCLUDE(NnMnist/nnMnist.cmake)
 INCLUDE(SaveAndLoadNnMnist/saveAndLoadNnMnist.cmake)
 INCLUDE(FashionMnist/fashionMnist.cmake)
-#INCLUDE(CatsAndDogsCnn/catsAndDogsCnn.cmake)
+INCLUDE(CatsAndDogsCnn/catsAndDogsCnn.cmake)
 INCLUDE(Cifar10/cifar10.cmake)
+INCLUDE(Cifar10SaveAndLoad/cifar10SaveAndLoad.cmake)
+#INCLUDE(testModel/testModel.cmake)

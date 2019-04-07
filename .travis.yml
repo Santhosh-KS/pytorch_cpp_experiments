@@ -74,23 +74,23 @@ script:
   #- g++ --version
   - cd /opt
   # Install opencv stuff.
-  - git clone https://github.com/opencv/opencv.git
-  - git clone https://github.com/opencv/opencv_contrib.git
-  - cd opencv_contrib
-  - git checkout 3.3.1
-    #- git checkout 4.0.1 
-  - cd /opt/opencv
-  - git checkout 3.3.1
-    #- git checkout 4.0.1 
-  - mkdir build
-  - cd build
-  - cmake -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=/usr/local -D WITH_TBB=ON -D WITH_V4L=ON -D WITH_QT=ON -D WITH_OPENGL=ON  -D OPENCV_EXTRA_MODULES_PATH=../../opencv_contrib/modules ..
-  - make -j4
-  - sudo make install
-  - sudo sh -c 'echo "/usr/local/lib" >> /etc/ld.so.conf.d/opencv.conf'
-  - sudo ldconfig
-  - source ~/.bashrc
-  - cd /opt
+  #- git clone https://github.com/opencv/opencv.git
+  #- git clone https://github.com/opencv/opencv_contrib.git
+  #- cd opencv_contrib
+  #- git checkout 3.3.1
+  ##  #- git checkout 4.0.1 
+  #- cd /opt/opencv
+  #- git checkout 3.3.1
+  #  #- git checkout 4.0.1 
+  #- mkdir build
+  #- cd build
+  #- cmake -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=/usr/local -D WITH_TBB=ON -D WITH_V4L=ON -D WITH_QT=ON -D WITH_OPENGL=ON  -D OPENCV_EXTRA_MODULES_PATH=../../opencv_contrib/modules ..
+  #- make -j4
+  #- sudo make install
+  #- sudo sh -c 'echo "/usr/local/lib" >> /etc/ld.so.conf.d/opencv.conf'
+  #- sudo ldconfig
+  #- source ~/.bashrc
+  #- cd /opt
 
   # Install pytorch stuff.
   - wget https://download.pytorch.org/libtorch/nightly/cpu/libtorch-shared-with-deps-latest.zip
@@ -124,6 +124,7 @@ script:
   - ./SaveAndLoadNnMnist
   - ./FashionMnist
   - ./Cifar10
+  - ./Cifar10SaveAndLoad
   # Profile the NnMnist.
   - gprof ./NnMnist > gprof.log
   - head gprof.log -n 20
