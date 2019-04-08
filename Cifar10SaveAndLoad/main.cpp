@@ -99,7 +99,23 @@ struct CifarNetImpl : torch::nn::Cloneable<CifarNetImpl> {
 
 TORCH_MODULE(CifarNet);
 
-int main()
+
+torch::Device GetDevice()
+{
+  // Check if GPU is available.
+  torch::Device device(torch::kCPU);
+
+  if (torch::cuda::is_available()) {
+    std::cout << "CUDA is available!\n";
+    device = torch::Device(torch::kCUDA);
+  }
+  else {
+    std::cout << "Let us setlle for a CPU.";
+  }
+  return device;
+}
+
+void TrainModel(const std::string &file)
 {
   TDD::CIFAR10::Mode  mode = TDD::CIFAR10::Mode::kTrain;
   uint32_t batchSize = 64;
@@ -131,34 +147,25 @@ int main()
 
 #endif
 
-  // Check if GPU is available.
-  torch::Device device(torch::kCPU);
+  torch::Device device(GetDevice());
 
-  if (torch::cuda::is_available()) {
-    std::cout << "CUDA is available! Training on GPU." << std::endl;
-    device = torch::Device(torch::kCUDA);
-  }
-  else {
-    std::cout << "Training on CPU." << std::endl;
-  }
-
-  CifarNet seqConvLayer;
-  seqConvLayer->to(device);
+  CifarNet model;
+  model->to(device);
   std::cout << "Model:\n\n";
-  std::cout << c10::str(seqConvLayer) << "\n\n";
+  std::cout << c10::str(model) << "\n\n";
 
-  torch::optim::SGD optimizer(seqConvLayer->parameters(), /*lr=*/0.01);
+  torch::optim::SGD optimizer(model->parameters(), /*lr=*/0.05);
 
   std::cout << "Training.....\n";
 
   double minVal(10000.991);
-  for (size_t epoch = 1; epoch <= 2; ++epoch) {
+  for (size_t epoch = 1; epoch <= 30; ++epoch) {
 
     size_t batchIndex = 0;
     // keep track of training and validation loss
     float train_loss = 0.0;
 
-    seqConvLayer->train();
+    model->train();
     for (auto& batch : *trainDataLoader) {
 
       batch.data.to(device);
@@ -173,7 +180,7 @@ int main()
 
 
       // forward pass: compute predicted outputs by passing inputs to the model
-      torch::Tensor prediction = seqConvLayer->forward(imgs);
+      torch::Tensor prediction = model->forward(imgs);
 
       // calculate the batch loss
       auto loss = torch::nll_loss(prediction, batch.target.to(torch::kLong));
@@ -193,27 +200,112 @@ int main()
       }
       if (minVal >  loss.item<float>()) {
         minVal =  loss.item<float>();
-        std::string model_path = "new_test.pt";
-        torch::save(seqConvLayer, model_path);
+        torch::save(model, file);
         std::cout << "Saving model with least training error = " << minVal << "\n";
       }
     }
   }
   std::cout << "Least training error reached = " << minVal << "\n";
+}
 
-  torch::serialize::InputArchive archive;
-
-  std::string file = "new_test.pt";
-  CifarNet newCifarnet;
-  torch::load(newCifarnet, file);
+void TestModel(const std::string &file)
+{
+  CifarNet model;
+  torch::load(model, file);
 #if 0
-  for (auto& p : newCifarnet->named_parameters()) {
+  for (auto& p : model->named_parameters()) {
     std::cout << p.key() << std::endl;
     // Access value.
     std::cout << p.value() << std::endl;
   }
 #endif
+  if (model->named_parameters().size() <= 0) {
+    std::cout << file.c_str() << "loading failed\n";
+    return;
+  }
   std::cout << "Saved Model:\n\n";
-  std::cout << c10::str(newCifarnet) << "\n\n";
+  std::cout << c10::str(model) << "\n\n";
+
+  torch::Device device(GetDevice());
+  model->to(device);
+
+  TDD::CIFAR10::Mode  mode = TDD::CIFAR10::Mode::kTest;
+  uint32_t batchSize = 64;
+
+  auto dataSet = torch::data::datasets::CIFAR10("/opt/pytorch/data/cifar-10-batches-bin/", mode);
+
+  auto testDataLoader = torch::data::make_data_loader(
+      dataSet.map(torch::data::transforms::Stack<>()),
+      batchSize);
+#if 0
+  auto batch = std::begin(*testDataLoader);
+  auto images = batch->data;
+  auto target = batch->target;
+
+  images.to(device);
+  target.to(device);
+#endif
+  model->eval();
+
+  std::vector<int> actualData(10,0);
+  std::vector<int> predictedData(10,0);
+
+  for (auto& batch : *testDataLoader) {
+
+      batch.data.to(device);
+      batch.target.to(device);
+    // Execute the model on the input data.
+    auto img = batch.data.to(torch::kFloat);
+    // LogProbability.
+    auto logProb = model->forward(img);
+    auto prediction = torch::exp(logProb);
+    auto maxVal = prediction.max(1);
+
+    auto itemSize = std::get<1>(maxVal).sizes();
+
+
+    for (uint32_t i = 0; i < itemSize[0]; i++) {
+      int tmpPredict = std::get<1>(maxVal)[i].item<int>();
+      int tmpActual = batch.target[i].item<int>();
+      //std::cout << i << " Prediction = " << tmpPredict << " Actual val = " << tmpActual <<  "\n";
+      //std::cout << i << " Prediction = " << dataSet.GetTarget(tmpPredict).c_str() << " Actual val = " << dataSet.GetTarget(tmpActual).c_str() <<  "\n";
+
+      if (tmpActual == tmpPredict) {
+        predictedData[tmpPredict] += 1;
+      }
+      actualData[tmpActual] += 1;
+    }
+  }
+
+  for(int i = 0; i < 10; i++) {
+    //std::cout << dataSet.GetTarget(i) << " Total actual = " << actualData[i] << " Predicted = " << predictedData[i] << "\n";
+
+    double percent  = double(predictedData[i])/double(actualData[i]);
+    std::cout << dataSet.GetTarget(i) << std::setprecision (4) <<" " << percent << "\n";
+
+  }
+}
+
+void PrintUsage()
+{
+  std::cout<< "USAGE : ./Cifar10SaveLoad <0/1>\n";
+  std::cout<< "0 : Train \n1 : Test\n";
+}
+
+int main(int argc, char** argv)
+{
+  if (argc != 2) {
+    PrintUsage();
+    return 0;
+  }
+
+  int option = std::stoi(argv[1]);
+  if (option > 1 || option < 0) {
+    PrintUsage();
+    return 0;
+  }
+//  std::string modelName("new_test.pt");
+  std::string modelName("BestModel.pt");
+  option ? TestModel(modelName) : TrainModel(modelName);
   return 0;
 }
