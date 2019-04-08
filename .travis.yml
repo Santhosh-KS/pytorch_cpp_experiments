@@ -113,21 +113,21 @@ script:
   - cd build
   - cmake ..
   - make VERBOSE=1 -j2
-  - ./HelloAten
-  - ./FrontEnd
-  - ./SimpleNeuralNet
-  - ./StackedNeuralNet
-  - ./BasicMnist
-  - ./SequenceNnMnist
-  - ./TorchNnModule
-  - ./NnMnist
-  - ./SaveAndLoadNnMnist
-  - ./FashionMnist
-  - ./Cifar10
-  - ./Cifar10SaveAndLoad
+    #- ./HelloAten
+    #- ./FrontEnd
+    #- ./SimpleNeuralNet
+    #- ./StackedNeuralNet
+    #- ./BasicMnist
+    #- ./SequenceNnMnist
+    #- ./TorchNnModule
+    #- ./NnMnist
+    #- ./SaveAndLoadNnMnist
+    #- ./FashionMnist
+    #- ./Cifar10
+    #- ./Cifar10SaveAndLoad
   # Profile the NnMnist.
-  - gprof ./NnMnist > gprof.log
-  - head gprof.log -n 20
+  #- gprof ./NnMnist > gprof.log
+  #- head gprof.log -n 20
   # Sanity check on the code using cppcheck.
   - cd ..
   - cppcheck --quiet --error-exitcode=1 --force . 

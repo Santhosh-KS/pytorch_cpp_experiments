@@ -63,7 +63,7 @@ struct LogSoftMax : torch::nn::Module {
   }
 };
 
-#if 0
+#if OPENCV_INCLUDED
 #include <opencv2/core.hpp>
 #include <opencv2/imgproc.hpp>
 #include <opencv2/highgui.hpp>
@@ -128,7 +128,7 @@ int main()
       dataSet.map(torch::data::transforms::Stack<>()),
       batchSize);
 
-#if 0
+#if OPENCV_INCLUDED
   // Test if the images loaded properly
   auto batch = std::begin(*trainDataLoader);
 
@@ -241,19 +241,17 @@ int main()
   torch::serialize::InputArchive archive;
   std::string file("test_model.pt");
   archive.load_from(file, device);
-  //std::stringstream fileContents(ReadFile(file));
-  //torch::load(archive, fileContents);
   torch::nn::Sequential savedSeq;
 
   savedSeq->load(archive);
+#if 0
   auto parameters = savedSeq->named_parameters();
   auto keys = parameters.keys();
   auto vals = parameters.values();
-
   for(auto v: keys) {
     std::cout << v << "\n";
   }
-
+#endif
   std::cout << "Saved Model:\n\n";
   std::cout << c10::str(savedSeq) << "\n\n";
   return 0;

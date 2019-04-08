@@ -11,7 +11,7 @@
 #include "Cifar10DataSetParser.hpp"
 
 
-#if 0
+#if OPENCV_INCLUDED
 #include <opencv2/core.hpp>
 #include <opencv2/imgproc.hpp>
 #include <opencv2/highgui.hpp>
@@ -110,7 +110,7 @@ int main()
       dataSet.map(torch::data::transforms::Stack<>()),
       batchSize);
 
-#if 0
+#if OPENCV_INCLUDED
   // Test if the images loaded properly
   auto batch = std::begin(*trainDataLoader);
 
@@ -206,12 +206,13 @@ int main()
   std::string file = "new_test.pt";
   CifarNet newCifarnet;
   torch::load(newCifarnet, file);
-
+#if 0
   for (auto& p : newCifarnet->named_parameters()) {
     std::cout << p.key() << std::endl;
     // Access value.
     std::cout << p.value() << std::endl;
   }
+#endif
   std::cout << "Saved Model:\n\n";
   std::cout << c10::str(newCifarnet) << "\n\n";
   return 0;

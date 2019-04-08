@@ -5,14 +5,15 @@ SET(CMAKE_CXX_STANDARD_REQUIRED ON)
 SET(CMAKE_CXX_EXTENSIONS OFF)
 
 # if we want to profile all the bins just enable the below line with -pg option.
-#SET(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-Wall -Wextra -Wpedantic -Werror -pg -O2")
-SET(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-Wall -Wextra -Wpedantic -Werror ")
+#SET(PROFILE_FLAGS "-pg -O2")
+#SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CPP_COMPILE_CUSTOM_FLAGS} ${PROFILE_FLAGS}")
 
+SET(OPENCV_INCLUDED NO)
+SET(CPP_COMPILE_CUSTOM_FLAGS "-Wall -Wextra -Wpedantic -Werror")
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CPP_COMPILE_CUSTOM_FLAGS}")
 SET(CMAKE_PREFIX_PATH /opt/libtorch)
 
 FIND_PACKAGE(Torch REQUIRED)
-
-
 
 INCLUDE(HelloWorld/HelloWorld.cmake)
 INCLUDE(FrontEndExample/FrontEnd.cmake)
