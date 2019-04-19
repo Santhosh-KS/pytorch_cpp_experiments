@@ -154,12 +154,13 @@ void TrainModel(const std::string &file)
   std::cout << "Model:\n\n";
   std::cout << c10::str(model) << "\n\n";
 
-  torch::optim::SGD optimizer(model->parameters(), /*lr=*/0.05);
+  torch::optim::SGD optimizer(model->parameters(), /*lr=*/0.075);
 
   std::cout << "Training.....\n";
 
   double minVal(10000.991);
-  for (size_t epoch = 1; epoch <= 30; ++epoch) {
+  //for (size_t epoch = 1; epoch <= 30; ++epoch) {
+  for (size_t epoch = 1; epoch <= 2; ++epoch) {
 
     size_t batchIndex = 0;
     // keep track of training and validation loss
@@ -256,6 +257,8 @@ void TestModel(const std::string &file)
       batch.target.to(device);
     // Execute the model on the input data.
     auto img = batch.data.to(torch::kFloat);
+
+    //std::cout << "Image size = " << img.sizes() << "\n";
     // LogProbability.
     auto logProb = model->forward(img);
     auto prediction = torch::exp(logProb);

@@ -1,7 +1,8 @@
 PROJECT(Cifar10SaveAndLoad)
 
 SET(SRC Cifar10SaveAndLoad/main.cpp
-        Common/Cifar10DataSetParser.cpp)
+        Common/Cifar10DataSetParser.cpp
+        Common/ReadFile.cpp)
 
 SET(BIN Cifar10SaveAndLoad)
 SET(INC Common)

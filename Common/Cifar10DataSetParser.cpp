@@ -13,6 +13,7 @@
 #include <algorithm>
 
 #include "Cifar10DataSetParser.hpp"
+#include "ReadFile.hpp"
 
 
 namespace torch {
@@ -40,6 +41,21 @@ namespace torch {
         Targets = targTensor.view({size});
 
         return;
+      }
+
+      void CIFAR10::ReadLableFile(const std::string &path)
+      {
+        std::string LABELS_FILE("batches.meta.txt");
+        std::string file(path + LABELS_FILE);
+        std::cout << "\nProcessing Lables file : " << file.c_str() << "\n";
+
+        ReadFile rFile(file);
+        LabelsVector = rFile.Data();
+
+        for (auto &v: LabelsVector) {
+          std::cout << v << "\n";
+        }
+        std::cout << "\n";
       }
 
       void CIFAR10::ReadBinFile(const std::string &path, bool mode)
@@ -125,6 +141,7 @@ namespace torch {
       CIFAR10::CIFAR10(const std::string &root, Mode mode)
       {
         ReadBinFile(root, Mode::kTrain == mode);
+        ReadLableFile(root);
       }
 
       CIFAR10::~CIFAR10()
@@ -143,13 +160,14 @@ namespace torch {
 
       std::string CIFAR10::GetTarget(int id)
       {
-        std::vector<std::string> targetString = {"airplane", "automobile", "bird", "cat", "deer",
-                     "dog", "frog", "horse", "ship", "truck"};
-
-        if (id > static_cast<int>(targetString.size()) || id < 0) {
+        if (LabelsVector.empty()) {
+          std::cout << "Something is wrong with the lables file..\n";
           return std::string("Unknown");
         }
-        return targetString[id];
+        if (id > static_cast<int>(LabelsVector.size()) || id < 0) {
+          return std::string("Unknown");
+        }
+        return LabelsVector[id];
       }
 
       bool CIFAR10::IsTrain() const noexcept

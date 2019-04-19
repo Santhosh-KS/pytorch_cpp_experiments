@@ -6,6 +6,8 @@
 
 #include <cstddef>
 #include <string>
+#include <vector>
+
 
 
 namespace torch {
@@ -19,8 +21,10 @@ namespace torch {
         private:
           torch::Tensor Images;
           torch::Tensor Targets;
+          std::vector<std::string> LabelsVector;
 
           void ReadBinFile(const std::string &path, bool mode);
+          void ReadLableFile(const std::string &path);
           std::tuple<std::vector<int>, std::vector<uint8_t>> GetData(const std::string &fileName);
           void SaveTensors(const std::vector<int> &lables, const std::vector<uint8_t> &imgs);
         public:
