@@ -1,7 +1,8 @@
 PROJECT(Cifar10Classifier)
 
 SET(SRC Cifar10/Cifar10.cpp
-        Common/Cifar10DataSetParser.cpp)
+        Common/Cifar10DataSetParser.cpp
+        Common/ReadFile.cpp)
 
 SET(BIN Cifar10)
 SET(INC Common)
